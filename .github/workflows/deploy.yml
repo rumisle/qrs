@@ -22,35 +22,32 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 1) Install pnpm in the runner
-      - name: Install pnpm
+      # Setup pnpm (version is taken from package.json: "packageManager")
+      - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          # Use a recent pnpm (10 is fine)
-          version: 10
           run_install: false
 
-      # 2) Setup Node and enable pnpm caching
+      # Setup Node with pnpm cache
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: pnpm
 
-      # 3) Install dependencies with pnpm
+      # Install dependencies
       - name: Install dependencies
         run: pnpm install
 
-      # 4) Build Nuxt using the GitHub Pages preset
+      # Build Nuxt for GitHub Pages
       - name: Build Nuxt for GitHub Pages
         env:
           # For https://<username>.github.io/qrs/
-          # If your Pages URL will be https://<username>.github.io/abc/,
-          # change this to "/abc/".
+          # If your repo/Pages path is different, change this.
           NUXT_APP_BASE_URL: "/qrs/"
         run: pnpm exec nuxt build --preset github_pages
 
-      # 5) Upload the static site
+      # Upload the built static site
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
